@@ -186,7 +186,8 @@ module EventMachine
       headers = @headers.merge({'Cache-Control' => 'no-cache', 'Accept' => 'text/event-stream'})
       headers.merge!({'Last-Event-Id' => @last_event_id }) if not @last_event_id.nil?
       [conn, conn.get({ :query => @query,
-                        :head  => headers})]
+                        :head  => headers,
+			:redirects => 1})]
     end
   end
 end
