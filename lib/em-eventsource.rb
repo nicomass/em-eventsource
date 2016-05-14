@@ -134,7 +134,11 @@ module EventMachine
     end
 
     def handle_headers(headers)
-      if headers.status != 200
+      if headers.status == 307
+        @url = headers['LOCATION']
+        puts "redirect to #{@url}"
+        listen
+      elsif headers.status != 200
         close
         @errors.each { |error| error.call("Unexpected response status #{headers.status}") }
         return
@@ -185,9 +189,10 @@ module EventMachine
       }
       headers = @headers.merge({'Cache-Control' => 'no-cache', 'Accept' => 'text/event-stream'})
       headers.merge!({'Last-Event-Id' => @last_event_id }) if not @last_event_id.nil?
+      puts "getting #{@url}"
       [conn, conn.get({ :query => @query,
                         :head  => headers,
-			:redirects => 1})]
+                        :redirects => 1})]
     end
   end
 end
